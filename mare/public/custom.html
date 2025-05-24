@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Custom Design - Mare Arts</title>
+  <title>Custom Design Order</title>
   <link rel="stylesheet" href="styles/style.css" />
 </head>
 <body>
   <header>
     <div class="logo">Mare Arts</div>
     <nav>
-      <ul id="nav-menu">
+      <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="shop.html">Shop</a></li>
         <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
@@ -18,64 +18,97 @@
     </nav>
   </header>
 
-  <main class="account-container">
-    <h1>Customize Your Product</h1>
+  <main class="custom-order-form">
+    <h1>Custom Design Order</h1>
 
-    <label for="custom-text">Custom Text:</label>
-    <input type="text" id="custom-text" class="form-input" placeholder="e.g., Happy Birthday, Sarah!" />
+    <form id="custom-form">
+      <label for="product">Select Product:</label>
+      <select id="product" required>
+        <option value="">Choose a product</option>
+        <option value="Mug">Mug</option>
+        <option value="Shirt">Shirt</option>
+        <option value="Sticker">Sticker</option>
+        <option value="Tote Bag">Tote Bag</option>
+      </select>
 
-    <label for="custom-image">Upload Image:</label>
-    <input type="file" id="custom-image" accept="image/*" class="form-input" />
+      <label for="custom-text">Custom Text (optional):</label>
+      <input type="text" id="custom-text" placeholder="e.g. Happy Birthday!">
 
-    <div id="preview" style="margin-top: 1rem;">
-      <h3>Live Preview:</h3>
-      <p id="preview-text"></p>
-      <img id="preview-img" src="" alt="Image Preview" style="max-width: 300px; display: none;" />
-    </div>
+      <label for="image-upload">Upload Image:</label>
+      <input type="file" id="image-upload" accept="image/*" required />
+      <div id="preview-container"></div>
 
-    <button onclick="saveCustomDesign()">Save Design</button>
-    <p id="status-msg"></p>
+      <button type="submit">Submit Custom Order</button>
+    </form>
+
+    <p id="submit-message" style="color: green;"></p>
   </main>
 
+  <footer>
+    <p>© 2025 Mare Arts</p>
+  </footer>
+
   <script>
-    const textInput = document.getElementById('custom-text');
-    const fileInput = document.getElementById('custom-image');
-    const previewText = document.getElementById('preview-text');
-    const previewImg = document.getElementById('preview-img');
-    const statusMsg = document.getElementById('status-msg');
+    const form = document.getElementById("custom-form");
+    const imageInput = document.getElementById("image-upload");
+    const previewContainer = document.getElementById("preview-container");
+    const message = document.getElementById("submit-message");
 
-    textInput.addEventListener('input', () => {
-      previewText.textContent = textInput.value;
-    });
-
-    fileInput.addEventListener('change', () => {
-      const file = fileInput.files[0];
+    // Show image preview
+    imageInput.addEventListener("change", () => {
+      const file = imageInput.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = function (e) {
-          previewImg.src = e.target.result;
-          previewImg.style.display = 'block';
+        reader.onload = () => {
+          previewContainer.innerHTML = `<img src="${reader.result}" alt="Preview" style="max-width:200px; margin-top:1em;">`;
         };
         reader.readAsDataURL(file);
       }
     });
 
-    function saveCustomDesign() {
-      const design = {
-        text: textInput.value.trim(),
-        image: previewImg.src
-      };
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
 
-      if (!design.text && !fileInput.files.length) {
-        statusMsg.textContent = "Please enter text or upload an image.";
-        statusMsg.style.color = "red";
+      const userEmail = localStorage.getItem("currentUser");
+      if (!userEmail) {
+        alert("Please log in to place a custom order.");
         return;
       }
 
-      localStorage.setItem('custom-design', JSON.stringify(design));
-      statusMsg.textContent = "Design saved! It will be included with your order.";
-      statusMsg.style.color = "green";
-    }
+      const product = document.getElementById("product").value;
+      const customText = document.getElementById("custom-text").value;
+      const file = imageInput.files[0];
+
+      if (!file) {
+        alert("Please upload an image.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const imageData = reader.result;
+
+        const customOrder = {
+          type: "Custom",
+          product,
+          customText,
+          imageData,
+          date: new Date().toLocaleString(),
+          status: "Pending"
+        };
+
+        const userData = JSON.parse(localStorage.getItem(userEmail));
+        userData.orders = userData.orders || [];
+        userData.orders.push(customOrder);
+        localStorage.setItem(userEmail, JSON.stringify(userData));
+
+        message.textContent = "Your custom order has been submitted!";
+        form.reset();
+        previewContainer.innerHTML = "";
+      };
+
+      reader.readAsDataURL(file);
+    });
   </script>
 </body>
 </html>

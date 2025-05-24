@@ -335,6 +335,23 @@ footer {
 .custom-btn:hover {
   background-color: #444;
 }
+.badge {
+  display: inline-block;
+  padding: 0.25em 0.6em;
+  border-radius: 0.5em;
+  font-size: 0.85em;
+  font-weight: bold;
+  color: white;
+  margin-top: 0.5em;
+}
+
+.badge-pending {
+  background-color: orange;
+}
+
+.badge-shipped {
+  background-color: green;
+}
 
 
 

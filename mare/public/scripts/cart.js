@@ -1,7 +1,7 @@
-// Load or initialize cart from localStorage
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
+const user = localStorage.getItem("currentUser");
+const cartKey = user ? `cart-${user}` : "cart";
+let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
 
-// Add product to cart
 function addToCart(productName, price) {
   const existingIndex = cart.findIndex(item => item.name === productName);
 
@@ -11,17 +11,21 @@ function addToCart(productName, price) {
     cart.push({ name: productName, price: price, quantity: 1 });
   }
 
-  localStorage.setItem('cart', JSON.stringify(cart));
+  localStorage.setItem(cartKey, JSON.stringify(cart));
   updateCartCount();
 }
 
-// Update cart count in header
 function updateCartCount() {
-  const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+  const cartItems = JSON.parse(localStorage.getItem(cartKey)) || [];
   const totalCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-  const cartCountEl = document.getElementById('cart-count');
+  const cartCountEl = document.getElementById("cart-count");
   if (cartCountEl) {
     cartCountEl.textContent = totalCount;
   }
+}
+
+// Optionally call this on page load
+updateCartCount();
+
 }

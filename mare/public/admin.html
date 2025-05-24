@@ -10,25 +10,37 @@
   <header>
     <div class="logo">Mare Arts Admin</div>
     <nav>
-      <ul id="nav-menu">
+      <ul>
         <li><a href="index.html">Home</a></li>
-        <li><a href="shop.html">Shop</a></li>
+        <li><a href="#" onclick="logout()">Logout</a></li>
       </ul>
     </nav>
   </header>
 
   <main class="orders-container">
     <h1>Admin Dashboard</h1>
-    <div id="admin-warning" style="color:red;"></div>
-    <section>
-      <h2>All Users</h2>
-      <ul id="user-list"></ul>
-    </section>
+    <div id="admin-warning" style="color: red;"></div>
 
-    <section>
-      <h2>All Orders</h2>
-      <div id="all-orders"></div>
-    </section>
+    <div style="margin-bottom: 1em;">
+      <label for="email-search"><strong>Search by email:</strong></label>
+      <input type="text" id="email-search" placeholder="Enter email or partial..." />
+
+      <label for="admin-filter" style="margin-left: 1em;"><strong>Filter by status:</strong></label>
+      <select id="admin-filter">
+        <option value="all">All</option>
+        <option value="Pending">Pending</option>
+        <option value="Shipped">Shipped</option>
+      </select>
+
+      <label for="type-filter" style="margin-left: 1em;"><strong>Filter by type:</strong></label>
+      <select id="type-filter">
+        <option value="all">All</option>
+        <option value="custom">Custom Orders Only</option>
+        <option value="standard">Standard Orders Only</option>
+      </select>
+    </div>
+
+    <div id="orders-display"></div>
   </main>
 
   <footer>
@@ -36,92 +48,167 @@
   </footer>
 
   <script>
-    const loggedInEmail = localStorage.getItem('loggedInUser');
-    const adminEmail = 'curtis@example.com'; // 🔐 YOUR ADMIN EMAIL
+    const currentUser = localStorage.getItem("currentUser");
+    const adminEmail = "admin@marearts.com";
 
-    const nav = document.getElementById("nav-menu");
+    const ordersDisplay = document.getElementById("orders-display");
 
-    if (loggedInEmail) {
-      const userData = JSON.parse(localStorage.getItem(`user-${loggedInEmail}`));
-      const userItem = document.createElement("li");
-      userItem.textContent = `Welcome, ${userData.name}`;
-      const logoutItem = document.createElement("li");
-      logoutItem.innerHTML = `<a href="#" id="logout-btn">Logout</a>`;
-      nav.append(userItem, logoutItem);
+    const statusFilterSelect = document.getElementById("admin-filter");
+    const typeFilterSelect = document.getElementById("type-filter");
+    const searchInput = document.getElementById("email-search");
 
-      document.getElementById("logout-btn").addEventListener("click", () => {
-        localStorage.removeItem("loggedInUser");
-        window.location.href = "index.html";
-      });
-    }
-
-    if (loggedInEmail !== adminEmail) {
-      document.getElementById("admin-warning").textContent = "Access denied. You are not an admin.";
-      document.querySelector("main").style.display = "none";
+    if (currentUser !== adminEmail) {
+      document.getElementById("admin-warning").textContent = "Access denied. Admin only.";
+      ordersDisplay.style.display = "none";
     } else {
-      loadUsers();
-      loadAllOrders();
+      applyFilters();
+      statusFilterSelect.addEventListener("change", applyFilters);
+      typeFilterSelect.addEventListener("change", applyFilters);
+      searchInput.addEventListener("input", applyFilters);
     }
 
-    function loadUsers() {
-      const userList = document.getElementById('user-list');
-      userList.innerHTML = '';
-
-      for (let key in localStorage) {
-        if (key.startsWith('user-')) {
-          const user = JSON.parse(localStorage.getItem(key));
-          const li = document.createElement('li');
-          li.textContent = `${user.name} (${user.email})`;
-          userList.appendChild(li);
-        }
-      }
+    function applyFilters() {
+      renderAllOrders(
+        statusFilterSelect.value,
+        typeFilterSelect.value,
+        searchInput.value.trim()
+      );
     }
 
-    function loadAllOrders() {
-      const orderBox = document.getElementById('all-orders');
-      orderBox.innerHTML = '';
+    function renderAllOrders(statusFilter = "all", typeFilter = "all", searchQuery = "") {
+      ordersDisplay.innerHTML = "";
 
       for (let key in localStorage) {
-        if (key.startsWith('user-')) {
-          const user = JSON.parse(localStorage.getItem(key));
-          if (user.orders && user.orders.length > 0) {
-            user.orders.forEach((order, index) => {
-              const div = document.createElement('div');
-              div.classList.add('order-card');
-             const isFulfilled = order.fulfilled;
-div.classList.toggle("fulfilled", isFulfilled);
+        if (key.includes("@") && key !== "currentUser") {
+          if (!key.toLowerCase().includes(searchQuery.toLowerCase())) continue;
 
-      function markFulfilled(email, orderIndex) {
-        const userKey = `user-${email}`;
-        const user = JSON.parse(localStorage.getItem(userKey));
-          if (!user || !user.orders || !user.orders[orderIndex]) return;
+          const userData = JSON.parse(localStorage.getItem(key));
+          if (!userData || !userData.orders || userData.orders.length === 0) continue;
 
-          user.orders[orderIndex].fulfilled = true;
-          localStorage.setItem(userKey, JSON.stringify(user));
-  loadAllOrders();
-}
+          const userBlock = document.createElement("div");
+          userBlock.classList.add("user-orders");
+          userBlock.innerHTML = `<h3>${userData.email}</h3>`;
 
+          userData.orders.forEach((order, index) => {
+            const orderStatus = order.status || "Pending";
+            const isCustom = !!order.imageData;
 
-div.innerHTML = `
-  <h3>${user.name} (${user.email}) - Order #${index + 1}</h3>
-  <p><strong>Date:</strong> ${order.date}</p>
-  <p><strong>Items:</strong></p>
-  <ul>
-    ${order.items.map(item => `<li>${item.name} x${item.quantity}</li>`).join("")}
-  </ul>
-  <p><strong>Total:</strong> $${order.total.toFixed(2)}</p>
-  <p>Status: <strong>${isFulfilled ? "Fulfilled ✅" : "Pending ⏳"}</strong></p>
-  <button onclick="markFulfilled('${user.email}', ${index})" ${isFulfilled ? "disabled" : ""}>
-    Mark as Fulfilled
-  </button>
-`;
+            if (statusFilter !== "all" && orderStatus !== statusFilter) return;
+            if (typeFilter === "custom" && !isCustom) return;
+            if (typeFilter === "standard" && isCustom) return;
 
-              orderBox.appendChild(div);
+            const orderDiv = document.createElement("div");
+            orderDiv.classList.add("order");
+
+            let itemsHtml = "";
+            if (order.items && order.items.length > 0) {
+              itemsHtml = "<ul>";
+              order.items.forEach(item => {
+                itemsHtml += `<li>${item.name} x${item.quantity} - $${item.price}</li>`;
+              });
+              itemsHtml += "</ul>";
+            }
+
+            let imageHtml = "";
+            if (order.imageData) {
+              const imageId = `image-${index}-${key.replace(/[^a-zA-Z0-9]/g, "")}`;
+              imageHtml = `
+                <p><strong>Custom Design:</strong></p>
+                <img id="${imageId}" src="${order.imageData}" alt="Custom Upload"
+                     style="max-width:200px; border:1px solid #ccc; border-radius:8px; margin-bottom:1em; display:block;" />
+                <button onclick="downloadImage('${imageId}', 'custom-${userData.email.replace(/[^a-zA-Z0-9]/g, "")}-order${index + 1}.png')">
+                  Download Image
+                </button>
+              `;
+            }
+
+            const statusText = document.createElement("span");
+            statusText.className = `badge ${orderStatus === "Shipped" ? "badge-shipped" : "badge-pending"}`;
+            statusText.textContent = orderStatus;
+
+            const shipBtn = document.createElement("button");
+            shipBtn.textContent = "Mark as Shipped";
+            shipBtn.disabled = orderStatus === "Shipped";
+
+            shipBtn.addEventListener("click", () => {
+              userData.orders[index].status = "Shipped";
+              localStorage.setItem(key, JSON.stringify(userData));
+              applyFilters();
             });
-          }
+
+            orderDiv.innerHTML = `
+              <p><strong>Order #${index + 1}</strong></p>
+              <p><strong>Date:</strong> ${order.date}</p>
+              ${itemsHtml}
+              ${imageHtml}
+              <p><strong>Total:</strong> $${order.total || "N/A"}</p>
+            `;
+
+            orderDiv.appendChild(statusText);
+            orderDiv.appendChild(shipBtn);
+            orderDiv.innerHTML += "<hr/>";
+            userBlock.appendChild(orderDiv);
+          });
+
+          ordersDisplay.appendChild(userBlock);
         }
       }
+    }
+
+    function downloadImage(imageId, filename) {
+      const image = document.getElementById(imageId);
+      const link = document.createElement("a");
+      link.href = image.src;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function logout() {
+      localStorage.removeItem("currentUser");
+      window.location.href = "index.html";
     }
   </script>
+
+  <style>
+    .badge {
+      display: inline-block;
+      padding: 0.25em 0.6em;
+      border-radius: 0.5em;
+      font-size: 0.85em;
+      font-weight: bold;
+      color: white;
+      margin-top: 0.5em;
+    }
+
+    .badge-pending {
+      background-color: orange;
+    }
+
+    .badge-shipped {
+      background-color: green;
+    }
+
+    .user-orders {
+      border: 1px solid #ccc;
+      margin: 1em 0;
+      padding: 1em;
+      border-radius: 8px;
+      background-color: #f8f8f8;
+    }
+
+    .user-orders h3 {
+      margin-top: 0;
+    }
+
+    .order {
+      margin-bottom: 1em;
+      padding: 0.5em;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+  </style>
 </body>
 </html>
