@@ -17,6 +17,8 @@
     <li><a href="shop.html">Shop</a></li>
     <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
     <li><a href="account.html">Account</a></li>
+    <li id="auth-link"></li>
+    <li><a href="account-settings.html">My Account</a></li>
   </ul>
 </nav>
 
@@ -100,6 +102,24 @@ if (email) {
     loginItem.innerHTML = `<a href="account.html">Login</a>
 `;
     nav.appendChild(loginItem);
+  }
+</script>
+<script>
+  const authLink = document.getElementById('auth-link');
+  const currentUser = localStorage.getItem('currentUser');
+
+  if (currentUser) {
+    authLink.innerHTML = `
+      <a href="account-settings.html">My Account</a>
+      <a href="#" onclick="logout()">Logout</a>
+    `;
+  } else {
+    authLink.innerHTML = `<a href="account.html">Login</a>`;
+  }
+
+  function logout() {
+    localStorage.removeItem('currentUser');
+    window.location.href = 'index.html';
   }
 </script>
 

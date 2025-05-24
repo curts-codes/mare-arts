@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Settings</title>
+  <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+  <header>
+    <div class="logo">Mare Arts</div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+        <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
+        <li><a href="#" onclick="logout()">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="account-settings-container">
+    <h1>Account Settings</h1>
+
+    <form id="account-form">
+      <label for="email">Email:</label>
+      <input type="email" id="email" required>
+
+      <label for="password">New Password:</label>
+      <input type="password" id="password" placeholder="Leave blank to keep current password">
+
+      <button type="submit">Save Changes</button>
+    </form>
+
+    <p id="message"></p>
+  </main>
+
+  <footer>
+    <p>© 2025 Mare Arts</p>
+  </footer>
+
+  <script>
+    const currentUserEmail = localStorage.getItem('currentUser');
+    if (!currentUserEmail) {
+      window.location.href = "account.html"; // Redirect if not logged in
+    }
+
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const form = document.getElementById('account-form');
+    const message = document.getElementById('message');
+
+    // Load current email
+    emailInput.value = currentUserEmail;
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const newEmail = emailInput.value.trim();
+      const newPassword = passwordInput.value;
+
+      // Load old user data
+      const userData = JSON.parse(localStorage.getItem(currentUserEmail));
+
+      if (!userData) {
+        message.textContent = "User data not found.";
+        return;
+      }
+
+      // Update email and/or password
+      if (newEmail !== currentUserEmail) {
+        localStorage.removeItem(currentUserEmail);
+        localStorage.setItem(newEmail, JSON.stringify({
+          ...userData,
+          email: newEmail,
+          password: newPassword || userData.password
+        }));
+        localStorage.setItem('currentUser', newEmail);
+      } else {
+        userData.password = newPassword || userData.password;
+        localStorage.setItem(currentUserEmail, JSON.stringify(userData));
+      }
+
+      passwordInput.value = "";
+      message.textContent = "Account updated successfully!";
+    });
+
+    function logout() {
+      localStorage.removeItem('currentUser');
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>

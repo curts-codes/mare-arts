@@ -121,8 +121,8 @@ const address = `${street}, ${city}, ${zip}`;
     id: Date.now(),
     items: cartItems,
     total: cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
-    shippingInfo: { name, email, address },
-    date: new Date().toLocaleString()
+    shippingInfo: {name, email, address},
+    date: new Date().toLocaleString(),
   };
 
   userData.orders.push(newOrder);

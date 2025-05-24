@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Custom Design - Mare Arts</title>
+  <link rel="stylesheet" href="styles/style.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">Mare Arts</div>
+    <nav>
+      <ul id="nav-menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+        <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="account-container">
+    <h1>Customize Your Product</h1>
+
+    <label for="custom-text">Custom Text:</label>
+    <input type="text" id="custom-text" class="form-input" placeholder="e.g., Happy Birthday, Sarah!" />
+
+    <label for="custom-image">Upload Image:</label>
+    <input type="file" id="custom-image" accept="image/*" class="form-input" />
+
+    <div id="preview" style="margin-top: 1rem;">
+      <h3>Live Preview:</h3>
+      <p id="preview-text"></p>
+      <img id="preview-img" src="" alt="Image Preview" style="max-width: 300px; display: none;" />
+    </div>
+
+    <button onclick="saveCustomDesign()">Save Design</button>
+    <p id="status-msg"></p>
+  </main>
+
+  <script>
+    const textInput = document.getElementById('custom-text');
+    const fileInput = document.getElementById('custom-image');
+    const previewText = document.getElementById('preview-text');
+    const previewImg = document.getElementById('preview-img');
+    const statusMsg = document.getElementById('status-msg');
+
+    textInput.addEventListener('input', () => {
+      previewText.textContent = textInput.value;
+    });
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          previewImg.src = e.target.result;
+          previewImg.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    function saveCustomDesign() {
+      const design = {
+        text: textInput.value.trim(),
+        image: previewImg.src
+      };
+
+      if (!design.text && !fileInput.files.length) {
+        statusMsg.textContent = "Please enter text or upload an image.";
+        statusMsg.style.color = "red";
+        return;
+      }
+
+      localStorage.setItem('custom-design', JSON.stringify(design));
+      statusMsg.textContent = "Design saved! It will be included with your order.";
+      statusMsg.style.color = "green";
+    }
+  </script>
+</body>
+</html>
