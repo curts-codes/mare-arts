@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Orders - Mare Arts</title>
+  <link rel="stylesheet" href="styles/style.css" />
+    <script src="scripts/my-orders.js"></script>
+</head>
+<body>
+  <header>
+    <div class="logo">Mare Arts</div>
+    <nav>
+      <ul id="nav-menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+        <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="orders-container">
+    <h1>My Orders</h1>
+    <p id="user-greeting"></p>
+    <div id="orders-list"></div>
+  </main>
+
+  <footer>
+    <p>© 2025 Mare Arts</p>
+  </footer>
+
+  <script src="scripts/my-orders.js"></script>
+
+  <script>
+    // login/logout nav logic
+   const email = localStorage.getItem("loggedInUser");
+const nav = document.getElementById("nav-menu");
+
+if (email) {
+  const userData = JSON.parse(localStorage.getItem(`user-${email}`));
+  const name = userData?.name || email;
+
+  const userItem = document.createElement("li");
+  userItem.textContent = `Welcome, ${name}`;
+
+  const logoutItem = document.createElement("li");
+  logoutItem.innerHTML = `<a href="#" id="logout-btn">Logout</a>`;
+
+  nav.append(userItem, logoutItem);
+
+  document.getElementById("logout-btn").addEventListener("click", () => {
+    localStorage.removeItem("loggedInUser");
+    window.location.reload();
+  });
+
+
+    } else {
+      window.location.href = "login.html"; // force login
+    }
+  </script>
+</body>
+</html>

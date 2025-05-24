@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Cart</title>
+  <link rel="stylesheet" href="styles/style.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">Mare Arts</div>
+    <nav>
+  <ul id="nav-menu">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="shop.html">Shop</a></li>
+    <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
+    <li><a href="account.html">Account</a></li>
+  </ul>
+</nav>
+
+
+  </header>
+
+<h2>Your Cart</h2>
+<div id="cart-display"></div>
+
+  <main class="cart-page">
+    <h1>Your Cart</h1>
+    <ul id="cart-items"></ul>
+      <div id="cart-total" class="cart-total"></div>
+  </main>
+
+  <footer>
+    <p>© 2025 Mare Arts</p>
+  </footer>
+
+  <script src="scripts/cart.js"></script>
+<script>
+  const list = document.getElementById('cart-items');
+
+  function renderCart() {
+    const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+    list.innerHTML = '';
+    const totalDiv = document.getElementById('cart-total');
+
+    if (cartItems.length === 0) {
+      list.innerHTML = '<li>Your cart is empty.</li>';
+      totalDiv.textContent = '';
+      updateCartCount();
+      return;
+    }
+
+    let total = 0;
+    cartItems.forEach((item, index) => {
+      total += item.price * item.quantity;
+      const li = document.createElement('li');
+      li.innerHTML = `
+        ${item.name} - $${item.price.toFixed(2)} x ${item.quantity}
+        <button onclick="decreaseQty(${index})">-</button>
+        <button onclick="increaseQty(${index})">+</button>
+        <button onclick="removeFromCart(${index})">Remove</button>
+      `;
+      list.appendChild(li);
+    });
+
+    totalDiv.innerHTML = `
+      <p>Total: $${total.toFixed(2)}</p>
+      <button onclick="clearCart()">Clear Cart</button>
+      <button onclick="window.location.href='order-summary.html'">Checkout</button>
+
+    `;
+
+    updateCartCount();
+  }
+
+  function removeFromCart(index) {
+    const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+    cartItems.splice(index, 1);
+    localStorage.setItem('cart', JSON.stringify(cartItems));
+    renderCart();
+  }
+
+  function increaseQty(index) {
+    const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+    cartItems[index].quantity += 1;
+    localStorage.setItem('cart', JSON.stringify(cartItems));
+    renderCart();
+  }
+
+  function decreaseQty(index) {
+    const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+    if (cartItems[index].quantity > 1) {
+      cartItems[index].quantity -= 1;
+    } else {
+      cartItems.splice(index, 1);
+    }
+    localStorage.setItem('cart', JSON.stringify(cartItems));
+    renderCart();
+  }
+
+  function clearCart() {
+    localStorage.removeItem('cart');
+    renderCart();
+  }
+
+  function checkout() {
+    alert('Thank you for your order! (This is a dummy checkout for now)');
+    clearCart();
+  }
+
+
+  function updateCartCount() {
+  const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+  const count = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  document.getElementById('cart-count').textContent = count;
+}
+
+  updateCartCount();
+  renderCart();
+
+  function logout() {
+    localStorage.removeItem('loggedInUser');
+    alert('You have been logged out.');
+    window.location.href = 'index.html';
+  }
+  window.addEventListener('DOMContentLoaded', () => {
+  const loggedIn = localStorage.getItem('loggedInUser');
+  if (!loggedIn) {
+    document.querySelector("a[href='my-orders.html']").style.display = 'none';
+    document.querySelector("a[onclick='logout()']").style.display = 'none';
+  }
+});
+
+
+</script>
+<script>
+ const email = localStorage.getItem("loggedInUser");
+const nav = document.getElementById("nav-menu");
+
+if (email) {
+  const userData = JSON.parse(localStorage.getItem(`user-${email}`));
+  const name = userData?.name || email;
+
+  const userItem = document.createElement("li");
+  userItem.textContent = `Welcome, ${name}`;
+
+  const logoutItem = document.createElement("li");
+  logoutItem.innerHTML = `<a href="#" id="logout-btn">Logout</a>`;
+
+  nav.append(userItem, logoutItem);
+
+  document.getElementById("logout-btn").addEventListener("click", () => {
+    localStorage.removeItem("loggedInUser");
+    window.location.reload();
+  });
+
+  } else {
+    const loginItem = document.createElement("li");
+    loginItem.innerHTML = `<a href="account.html">Login</a>
+`;
+    nav.appendChild(loginItem);
+  }
+</script>
+
+
+</body>
+</html>

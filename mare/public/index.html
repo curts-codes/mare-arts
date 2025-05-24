@@ -1,0 +1,107 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mare Arts</title>
+  <link rel="stylesheet" href="styles/style.css">
+
+</head>
+<body>
+  <header>
+    <div class="logo">Mare Arts</div>
+   <nav>
+  <ul id="nav-menu">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="shop.html">Shop</a></li>
+    <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
+    <li><a href="account.html">Account</a></li>
+  </ul>
+</nav>
+
+
+<script>
+  const email = localStorage.getItem("loggedInUser");
+const nav = document.getElementById("nav-menu");
+
+if (email) {
+  const userData = JSON.parse(localStorage.getItem(`user-${email}`));
+  const name = userData?.name || email;
+
+  const userItem = document.createElement("li");
+  userItem.textContent = `Welcome, ${name}`;
+
+  const logoutItem = document.createElement("li");
+  logoutItem.innerHTML = `<a href="#" id="logout-btn">Logout</a>`;
+
+  nav.append(userItem, logoutItem);
+
+  document.getElementById("logout-btn").addEventListener("click", () => {
+    localStorage.removeItem("loggedInUser");
+    window.location.reload();
+  });
+}
+
+
+</script>
+
+
+  </header>
+
+  <section class="hero">
+    <img src="images/hero.jpg" height="400" width="1024"/>
+    <h1>Handmade with Love</h1>
+</section>
+
+<section class="products">
+  <h2>Featured Products</h2>
+  <div class="product-list">
+    <div class="product">
+      <img src="images/Mug.png" height="1024" width="1024"/>
+      <p>Mug<br>$15.00</p>
+    </div>
+    <div class="product">
+      <img src="images/Stickers.png" height="1024" width="1024"/>
+
+      <p>Sticker Pack<br>$8.00</p>
+    </div>
+    <div class="product">
+      <img src="images/Totebags.png" height="1024" width="1024"/>
+      <p>Tote Bag<br>$12.00</p>
+    </div>
+  </div>
+</section>
+
+
+  <footer id="contact">
+    <p>© 2025 Mare Arts</p>
+    <div class="socials">Instagram | Facebook | Email</div>
+  </footer>
+<script>
+  const user = localStorage.getItem("loggedInUser");
+  const nav = document.getElementById("nav-menu");
+
+  if (user) {
+    const userItem = document.createElement("li");
+    userItem.textContent = `Welcome, ${user}`;
+
+    const logoutItem = document.createElement("li");
+    logoutItem.innerHTML = `<a href="#" id="logout-btn">Logout</a>`;
+
+    nav.append(userItem, logoutItem);
+
+    document.getElementById("logout-btn").addEventListener("click", () => {
+      localStorage.removeItem("loggedInUser");
+      window.location.reload();
+    });
+  } else {
+    const loginItem = document.createElement("li");
+    loginItem.innerHTML = `<a href="account.html">Login</a>
+`;
+    nav.appendChild(loginItem);
+  }
+</script>
+
+</body>
+</html>
