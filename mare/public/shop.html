@@ -3,136 +3,83 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mare Arts Shop</title>
-  <link rel="stylesheet" href="styles/style.css"/>
-  <script src="scripts/cart.js"></script>
-
+  <title>Shop</title>
+  <link rel="stylesheet" href="styles/style.css" />
 </head>
 <body>
   <header>
     <div class="logo">Mare Arts</div>
     <nav>
-  <ul id="nav-menu">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="shop.html">Shop</a></li>
-    <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
-    <li><a href="account.html">Account</a></li>
-    <li id="auth-link"></li>
-    <li><a href="account-settings.html">My Account</a></li>
-  </ul>
-</nav>
-
-
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
+      </ul>
+    </nav>
   </header>
 
-  <main class="shop-page">
-    <h1>Shop All Products</h1>
-    <p>
-  Want something custom?
-   <a href="custom.html" class="custom-btn">Create a Custom Design</a>
-
-</p>
-    <div class="product-list">
-      <div class="product">
-        <img src="images/Mug.png" height="1024" width="1024"/>
-        <p>Mug<br>$15.00</p>
-        <button>Add to Cart</button>
-      </div>
-      <div class="product">
-        <img src="images/Stickers.png" height="1024" width="1024"/>
-        <p>Sticker Pack<br>$8.00</p>
-        <button>Add to Cart</button>
-      </div>
-      <div class="product">
-        <img src="images/Totebags.png" height="1024" width="1024"/>
-        <p>Tote Bag<br>$12.00</p>
-        <button>Add to Cart</button>
-      </div>
-    </div>
+  <main>
+    <h1>Shop Our Products</h1>
+    <div id="product-container" class="product-list"></div>
   </main>
 
-  <footer id="contact">
+  <footer>
     <p>© 2025 Mare Arts</p>
-    <div class="socials">Instagram | Facebook | Email</div>
   </footer>
-  <script src="scripts/cart.js"></script>
 
-<script>
-  // Attach buttons to addToCart
-  document.querySelectorAll('.product').forEach(product => {
-    const name = product.querySelector('p').innerText.split('\n')[0];
-    const priceText = product.querySelector('p').innerText.split('\n')[1];
-    const price = parseFloat(priceText.replace('$', ''));
-    const button = product.querySelector('button');
+  <script>
+    function getProducts() {
+      return JSON.parse(localStorage.getItem("products")) || [];
+    }
 
-    button.addEventListener('click', () => {
-      addToCart(name, price);
-      alert(`${name} added to cart!`);
-    });
-  });
+    function renderProducts() {
+      const container = document.getElementById("product-container");
+      const products = getProducts();
 
-  updateCartCount(); // Update count on load
+      if (products.length === 0) {
+        container.innerHTML = "<p>No products found.</p>";
+        return;
+      }
 
-  function logout() {
-    localStorage.removeItem('loggedInUser');
-    alert('You have been logged out.');
-    window.location.href = 'index.html';
-  }
-  window.addEventListener('DOMContentLoaded', () => {
-  const loggedIn = localStorage.getItem('loggedInUser');
-  if (!loggedIn) {
-    document.querySelector("a[href='my-orders.html']").style.display = 'none';
-    document.querySelector("a[onclick='logout()']").style.display = 'none';
-  }
-});
+      container.innerHTML = "";
 
-</script>
-<script>
-  const email = localStorage.getItem("loggedInUser");
-const nav = document.getElementById("nav-menu");
+      products.forEach(product => {
+        const div = document.createElement("div");
+        div.className = "product-card";
+        div.innerHTML = `
+          <a href="product.html?id=${product.id}" style="text-decoration:none; color:inherit;">
+            <img src="${product.image}" alt="${product.name}" style="width:100px; height:100px;" />
+            <h3>${product.name}</h3>
+            <p>$${product.price.toFixed(2)}</p>
+          </a>
+        `;
+        container.appendChild(div);
+      });
+    }
 
-if (email) {
-  const userData = JSON.parse(localStorage.getItem(`user-${email}`));
-  const name = userData?.name || email;
+    renderProducts();
+  </script>
 
-  const userItem = document.createElement("li");
-  userItem.textContent = `Welcome, ${name}`;
+  <style>
+    .product-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1em;
+      padding: 1em;
+    }
 
-  const logoutItem = document.createElement("li");
-  logoutItem.innerHTML = `<a href="#" id="logout-btn">Logout</a>`;
+    .product-card {
+      border: 1px solid #ccc;
+      padding: 1em;
+      border-radius: 8px;
+      text-align: center;
+      background: #fff;
+      transition: transform 0.2s ease;
+    }
 
-  nav.append(userItem, logoutItem);
-
-  document.getElementById("logout-btn").addEventListener("click", () => {
-    localStorage.removeItem("loggedInUser");
-    window.location.reload();
-  });
-
-  } else {
-    const loginItem = document.createElement("li");
-    loginItem.innerHTML = `<a href="account.html">Login</a>
-`;
-    nav.appendChild(loginItem);
-  }
-</script>
-<script>
-  const authLink = document.getElementById('auth-link');
-  const currentUser = localStorage.getItem('currentUser');
-
-  if (currentUser) {
-    authLink.innerHTML = `
-      <a href="account-settings.html">My Account</a>
-      <a href="#" onclick="logout()">Logout</a>
-    `;
-  } else {
-    authLink.innerHTML = `<a href="account.html">Login</a>`;
-  }
-
-  function logout() {
-    localStorage.removeItem('currentUser');
-    window.location.href = 'index.html';
-  }
-</script>
-
+    .product-card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+  </style>
 </body>
 </html>

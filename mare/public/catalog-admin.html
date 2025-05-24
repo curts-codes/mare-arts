@@ -48,79 +48,26 @@
   </footer>
 
   <script>
+  document.addEventListener("DOMContentLoaded", () => {
     const adminEmail = "admin@marearts.com";
     const currentUser = localStorage.getItem("currentUser");
+
+    console.log("Logged in as:", currentUser);
+
+    const warning = document.getElementById("admin-warning");
     const productList = document.getElementById("product-list");
+    const addForm = document.getElementById("add-form");
 
     if (currentUser !== adminEmail) {
-      document.getElementById("admin-warning").textContent = "Access denied. Admin only.";
-      productList.style.display = "none";
-      document.getElementById("add-form").style.display = "none";
-    } else {
-      renderProducts();
+      if (warning) warning.textContent = "Access denied. Admin only.";
+      if (productList) productList.style.display = "none";
+      if (addForm) addForm.style.display = "none";
+      return;
     }
 
-    function getProducts() {
-      return JSON.parse(localStorage.getItem("products")) || [];
-    }
+    renderProducts();
 
-    function saveProducts(products) {
-      localStorage.setItem("products", JSON.stringify(products));
-      renderProducts();
-    }
-
-    function renderProducts() {
-      const products = getProducts();
-      productList.innerHTML = "";
-
-      if (products.length === 0) {
-        productList.innerHTML = "<p>No products in the catalog.</p>";
-        return;
-      }
-
-      products.forEach((product, index) => {
-        const div = document.createElement("div");
-        div.style.border = "1px solid #ccc";
-        div.style.padding = "1em";
-        div.style.marginBottom = "1em";
-        div.style.borderRadius = "6px";
-
-        div.innerHTML = `
-          <p><strong>Name:</strong> <input type="text" value="${product.name}" id="name-${index}" /></p>
-          <p><strong>Price:</strong> $<input type="number" step="0.01" value="${product.price}" id="price-${index}" /></p>
-          <p><strong>Image:</strong> ${product.image ? `<img src="${product.image}" style="height:60px;">` : "No image"}</p>
-          <button onclick="updateProduct(${index})">Save Changes</button>
-          <button onclick="deleteProduct(${index})" style="color:red;">Delete</button>
-        `;
-
-        productList.appendChild(div);
-      });
-    }
-
-    function updateProduct(index) {
-      const products = getProducts();
-      const name = document.getElementById(`name-${index}`).value.trim();
-      const price = parseFloat(document.getElementById(`price-${index}`).value);
-
-      if (!name || isNaN(price)) {
-        alert("Please enter valid product info.");
-        return;
-      }
-
-      products[index].name = name;
-      products[index].price = price;
-      saveProducts(products);
-    }
-
-    function deleteProduct(index) {
-      const products = getProducts();
-      if (confirm("Are you sure you want to delete this product?")) {
-        products.splice(index, 1);
-        saveProducts(products);
-      }
-    }
-
-    document.getElementById("add-form").addEventListener("submit", function(e) {
+    addForm.addEventListener("submit", function(e) {
       e.preventDefault();
 
       const name = document.getElementById("new-name").value.trim();
@@ -142,13 +89,76 @@
 
       products.push(newProduct);
       saveProducts(products);
-      this.reset();
+      addForm.reset();
     });
+  });
 
-    function logout() {
-      localStorage.removeItem("currentUser");
-      window.location.href = "index.html";
+  function getProducts() {
+    return JSON.parse(localStorage.getItem("products")) || [];
+  }
+
+  function saveProducts(products) {
+    localStorage.setItem("products", JSON.stringify(products));
+    renderProducts();
+  }
+
+  function renderProducts() {
+    const products = getProducts();
+    const productList = document.getElementById("product-list");
+    productList.innerHTML = "";
+
+    if (products.length === 0) {
+      productList.innerHTML = "<p>No products in the catalog.</p>";
+      return;
     }
-  </script>
+
+    products.forEach((product, index) => {
+      const div = document.createElement("div");
+      div.style.border = "1px solid #ccc";
+      div.style.padding = "1em";
+      div.style.marginBottom = "1em";
+      div.style.borderRadius = "6px";
+
+      div.innerHTML = `
+        <p><strong>Name:</strong> <input type="text" value="${product.name}" id="name-${index}" /></p>
+        <p><strong>Price:</strong> $<input type="number" step="0.01" value="${product.price}" id="price-${index}" /></p>
+        <p><strong>Image:</strong> ${product.image ? `<img src="${product.image}" style="height:60px;">` : "No image"}</p>
+        <button onclick="updateProduct(${index})">Save Changes</button>
+        <button onclick="deleteProduct(${index})" style="color:red;">Delete</button>
+      `;
+
+      productList.appendChild(div);
+    });
+  }
+
+  function updateProduct(index) {
+    const products = getProducts();
+    const name = document.getElementById(`name-${index}`).value.trim();
+    const price = parseFloat(document.getElementById(`price-${index}`).value);
+
+    if (!name || isNaN(price)) {
+      alert("Please enter valid product info.");
+      return;
+    }
+
+    products[index].name = name;
+    products[index].price = price;
+    saveProducts(products);
+  }
+
+  function deleteProduct(index) {
+    const products = getProducts();
+    if (confirm("Are you sure you want to delete this product?")) {
+      products.splice(index, 1);
+      saveProducts(products);
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem("currentUser");
+    window.location.href = "index.html";
+  }
+</script>
+
 </body>
 </html>

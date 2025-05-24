@@ -352,6 +352,26 @@ footer {
 .badge-shipped {
   background-color: green;
 }
+.product-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1em;
+  padding: 1em;
+}
+
+.product-card {
+  border: 1px solid #ccc;
+  padding: 1em;
+  border-radius: 8px;
+  text-align: center;
+  background: #fff;
+  transition: transform 0.2s ease;
+}
+
+.product-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
 
 
 
