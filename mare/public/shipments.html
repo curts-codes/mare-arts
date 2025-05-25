@@ -3,28 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Dashboard</title>
+  <title>Shipment Information</title>
   <link rel="stylesheet" href="styles/style.css" />
 </head>
 <body>
   <header>
     <div class="logo">Mare Arts Admin</div>
     <nav>
-      <ul id="nav-menu">
-        <li><a href="index.html">Public Site</a></li>
+      <ul>
+        <li><a href="admin.html">Admin Dashboard</a></li>
         <li><a href="#" onclick="logout()">Logout</a></li>
       </ul>
     </nav>
   </header>
 
   <main>
-    <h1>Admin Dashboard</h1>
-    <p>Welcome, Admin! Use the links below to manage the Mare Arts store.</p>
-    <ul>
-      <li><a href="catalog-admin.html">📦 Manage Product Catalog</a></li>
-      <li><a href="orders.html">🧾 View Placed Orders</a></li>
-      <li><a href="shipments.html">🚚 Shipment Information</a></li>
-    </ul>
+    <h1>Shipment Information</h1>
+    <p>This section will be used to manage and track shipments for completed orders.</p>
+
+    <div id="shipment-container">
+      <p>No shipment records yet.</p>
+      <!-- Future: Table of shipments, status updates, tracking numbers -->
+    </div>
   </main>
 
   <footer>

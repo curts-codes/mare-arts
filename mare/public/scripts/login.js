@@ -1,4 +1,4 @@
-// LOGIN handler
+/// LOGIN handler
 document.getElementById("login-form").addEventListener("submit", function (e) {
   e.preventDefault();
 
@@ -13,7 +13,14 @@ document.getElementById("login-form").addEventListener("submit", function (e) {
   }
 
   localStorage.setItem("currentUser", email);
-  window.location.href = "index.html";
+  localStorage.setItem("loggedInUser", email);
+
+  // Redirect admin to admin.html, others to index.html
+  if (email === "admin@marearts.com") {
+    window.location.href = "admin.html";
+  } else {
+    window.location.href = "index.html";
+  }
 });
 
 // CREATE ACCOUNT handler
@@ -35,6 +42,5 @@ document.getElementById("create-form").addEventListener("submit", function (e) {
   };
 
   localStorage.setItem(email, JSON.stringify(newUser));
-  localStorage.setItem("currentUser", email);
-  window.location.href = "index.html";
+  alert("Account created! Please log in.");
 });

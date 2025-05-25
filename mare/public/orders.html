@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Placed Orders</title>
+  <link rel="stylesheet" href="styles/style.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">Mare Arts Admin</div>
+    <nav>
+      <ul>
+        <li><a href="admin.html">Admin Dashboard</a></li>
+        <li><a href="#" onclick="logout()">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Placed Orders</h1>
+    <div id="orders-container">
+      <!-- Orders will be displayed here -->
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 Mare Arts Admin</p>
+  </footer>
+
+  <script>
+    // Restrict to admin only
+    const user = localStorage.getItem("loggedInUser");
+    if (user !== "admin@marearts.com") {
+      alert("Access denied.");
+      window.location.href = "index.html";
+    }
+
+    // Display all orders from all users
+    const container = document.getElementById("orders-container");
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+
+      // Skip internal keys
+      if (key === "loggedInUser" || key === "currentUser" || key === "products") continue;
+
+      const userData = JSON.parse(localStorage.getItem(key));
+
+      if (userData?.orders?.length > 0) {
+        const section = document.createElement("section");
+        section.innerHTML = `<h3>Orders from ${key}</h3>`;
+
+        userData.orders.forEach((order, index) => {
+          const orderDiv = document.createElement("div");
+          orderDiv.className = "order-summary";
+          orderDiv.innerHTML = `
+            <p><strong>Order #${index + 1}</strong></p>
+            <ul>
+              ${order.map(item => `<li>${item.name} (x${item.quantity}) - $${item.price}</li>`).join("")}
+            </ul>
+            <hr />
+          `;
+          section.appendChild(orderDiv);
+        });
+
+        container.appendChild(section);
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      localStorage.removeItem("currentUser");
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>

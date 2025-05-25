@@ -3,6 +3,8 @@ const cartKey = user ? `cart-${user}` : "cart";
 let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
 
 function addToCart(productName, price) {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
   const existingIndex = cart.findIndex(item => item.name === productName);
 
   if (existingIndex > -1) {
@@ -11,9 +13,11 @@ function addToCart(productName, price) {
     cart.push({ name: productName, price: price, quantity: 1 });
   }
 
-  localStorage.setItem(cartKey, JSON.stringify(cart));
+  localStorage.setItem("cart", JSON.stringify(cart));
   updateCartCount();
+  alert("Item added to cart!");
 }
+
 
 function updateCartCount() {
   const cartItems = JSON.parse(localStorage.getItem(cartKey)) || [];

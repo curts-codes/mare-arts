@@ -1,127 +1,82 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mare Arts</title>
-  <link rel="stylesheet" href="styles/style.css">
-
+  <link rel="stylesheet" href="styles/style.css" />
 </head>
 <body>
   <header>
     <div class="logo">Mare Arts</div>
-   <nav>
-  <ul id="nav-menu">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="shop.html">Shop</a></li>
-    <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
-    <li><a href="account.html">Account</a></li>
-    <li id="auth-link"></li>
-    <li><a href="account-settings.html">My Account</a></li>
-  </ul>
-</nav>
-
-
-<script>
-  const email = localStorage.getItem("loggedInUser");
-const nav = document.getElementById("nav-menu");
-
-if (email) {
-  const userData = JSON.parse(localStorage.getItem(`user-${email}`));
-  const name = userData?.name || email;
-
-  const userItem = document.createElement("li");
-  userItem.textContent = `Welcome, ${name}`;
-
-  const logoutItem = document.createElement("li");
-  logoutItem.innerHTML = `<a href="#" id="logout-btn">Logout</a>`;
-
-  nav.append(userItem, logoutItem);
-
-  document.getElementById("logout-btn").addEventListener("click", () => {
-    localStorage.removeItem("loggedInUser");
-    window.location.reload();
-  });
-}
-
-
-</script>
-
-
+    <nav>
+      <ul id="nav-menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+        <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
+        <li><a href="account.html">Login</a></li>
+      </ul>
+    </nav>
   </header>
 
-  <section class="hero">
-    <img src="images/hero.jpg" height="400" width="1024"/>
-    <h1>Handmade with Love</h1>
-</section>
+  <main>
+    <h1>Welcome to Mare Arts</h1>
+    <p>Discover custom mugs, stickers, shirts and more!</p>
 
-<section class="products">
-  <h2>Featured Products</h2>
-  <div class="product-list">
-    <div class="product">
-      <img src="images/Mug.png" height="1024" width="1024"/>
-      <p>Mug<br>$15.00</p>
-    </div>
-    <div class="product">
-      <img src="images/Stickers.png" height="1024" width="1024"/>
+    <section class="product-card-container">
+      <!-- Example product cards -->
+      <div class="order-summary">
+        <h3>Custom Mug</h3>
+        <img src="images/Mug.png" height="400" width="400"/>
+        <p>$12.99</p>
+        <button>Add to Cart</button>
+      </div>
 
-      <p>Sticker Pack<br>$8.00</p>
-    </div>
-    <div class="product">
-      <img src="images/Totebags.png" height="1024" width="1024"/>
-      <p>Tote Bag<br>$12.00</p>
-    </div>
-  </div>
-</section>
+      <div class="order-summary">
+        <h3>Sticker Pack</h3>
+        <img src="images/Stickers.png" height="400" width="400"/>
+        <p>$5.99</p>
+        <button>Add to Cart</button>
+      </div>
 
+      <div class="order-summary">
+        <h3>Tote Bags</h3>
+        <img src="images/Totebags.png" height="400" width="400"/>
+        <p>$5.99</p>
+        <button>Add to Cart</button>
+      </div>
 
-  <footer id="contact">
+    </section>
+  </main>
+
+  <footer>
     <p>© 2025 Mare Arts</p>
-    <div class="socials">Instagram | Facebook | Email</div>
   </footer>
-<script>
-  const user = localStorage.getItem("loggedInUser");
-  const nav = document.getElementById("nav-menu");
 
-  if (user) {
-    const userItem = document.createElement("li");
-    userItem.textContent = `Welcome, ${user}`;
+  <script>
+    // Example: Load cart count from localStorage
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    document.getElementById("cart-count").textContent = cart.length;
 
-    const logoutItem = document.createElement("li");
-    logoutItem.innerHTML = `<a href="#" id="logout-btn">Logout</a>`;
+    // Optional: Inject welcome message + logout
+    const email = localStorage.getItem("loggedInUser");
+    if (email) {
+      const nav = document.getElementById("nav-menu");
 
-    nav.append(userItem, logoutItem);
+      const welcomeItem = document.createElement("li");
+      welcomeItem.textContent = `Welcome, ${email}`;
+      nav.appendChild(welcomeItem);
 
-    document.getElementById("logout-btn").addEventListener("click", () => {
+      const logoutItem = document.createElement("li");
+      logoutItem.innerHTML = `<a href="#" onclick="logout()">Logout</a>`;
+      nav.appendChild(logoutItem);
+    }
+
+    function logout() {
       localStorage.removeItem("loggedInUser");
-      window.location.reload();
-    });
-  } else {
-    const loginItem = document.createElement("li");
-    loginItem.innerHTML = `<a href="account.html">Login</a>
-`;
-    nav.appendChild(loginItem);
-  }
-</script>
-<script>
-  const authLink = document.getElementById('auth-link');
-  const currentUser = localStorage.getItem('currentUser');
-
-  if (currentUser) {
-    authLink.innerHTML = `
-      <a href="account-settings.html">My Account</a>
-      <a href="#" onclick="logout()">Logout</a>
-    `;
-  } else {
-    authLink.innerHTML = `<a href="account.html">Login</a>`;
-  }
-
-  function logout() {
-    localStorage.removeItem('currentUser');
-    window.location.href = 'index.html';
-  }
-</script>
-
+      localStorage.removeItem("currentUser");
+      window.location.href = "account.html";
+    }
+  </script>
 </body>
 </html>

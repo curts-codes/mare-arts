@@ -20,6 +20,16 @@
   <main>
     <h1>Shop Our Products</h1>
     <div id="product-container" class="product-list"></div>
+    <h1>Shop All Products</h1>
+
+<!-- Custom Orders Button -->
+<a href="custom.html" class="button-link">🎨 Create a Custom Order</a>
+
+<!-- Products Container -->
+<section class="product-card-container" id="product-list">
+  <!-- Products will be loaded here dynamically -->
+</section>
+
   </main>
 
   <footer>
@@ -27,6 +37,8 @@
   </footer>
 
   <script>
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
     function getProducts() {
       return JSON.parse(localStorage.getItem("products")) || [];
     }

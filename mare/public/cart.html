@@ -14,9 +14,7 @@
     <li><a href="index.html">Home</a></li>
     <li><a href="shop.html">Shop</a></li>
     <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
-    <li><a href="account.html">Account</a></li>
     <li id="auth-link"></li>
-    <li><a href="account-settings.html">My Account</a></li>
   </ul>
 </nav>
 
@@ -38,6 +36,8 @@
 
   <script src="scripts/cart.js"></script>
 <script>
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
   const list = document.getElementById('cart-items');
 
   function renderCart() {
@@ -181,6 +181,16 @@ if (email) {
     localStorage.removeItem('currentUser');
     window.location.href = 'index.html';
   }
+  const nav = document.getElementById("nav-menu");
+const email = localStorage.getItem("loggedInUser");
+
+if (email && !document.querySelector(".my-account-link")) {
+  const accountItem = document.createElement("li");
+  accountItem.classList.add("my-account-link");
+  accountItem.innerHTML = `<a href="account-settings.html">My Account</a>`;
+  nav.appendChild(accountItem);
+}
+
 </script>
 
 </body>
